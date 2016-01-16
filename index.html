@@ -7,25 +7,92 @@
     <title>Colourblind Bookmarklet</title>
 
     <style>
-        body {
-            color: #333;
-            max-width: 20em;
-            margin: 0 auto;
-            padding: 1em;
-        }
-        img {
+        html, body {
             width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica;
+
+            background: white;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+        }
+        body.starting-class {
+            background-image: url(cube-perspective.jpg);
+        }
+        body.drag_drop_over {
+            box-shadow: inset 0 0 100px rgb(0, 0, 0),
+                        inset 0 0  50px rgb(0, 0, 0),
+                        inset 0 0  10px rgb(0, 0, 0),
+                        inset 0 0  75px rgb(0, 0, 0);
+        }
+        .container img {
+            height: 231px;
+            /*width: 100%;*/
         }
         a {
             display: block;
             border: 1px dashed;
             text-align: center;
         }
+        .selection {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(255, 255, 255, 0.5);
+            color: black;
+        }
+        .type-select, .cycle-background-size, .line {
+            padding: 0.25em 1em;
+            /*cursor: pointer;*/
+            font-size: 1.5em;
+            width: 10em;
+            font-variant: small-caps;
+        }
+        .type-select:hover {
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+        }
+        .current {
+            /*font-weight: bold;*/
+            text-decoration: underline;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+        }
+        .cycle-background-size {
+            cursor: pointer;
+        }
+        .cycle-background-size:hover {
+            background: none;
+            text-decoration: underline;
+        }
+        .cycle-background-size:active {
+            background: black;
+            color: white;
+        }
     </style>
+    <script src="colorblind.js"></script>
     </head>
-    <body>
-        <img src="http://palmr.co.uk/uploads/blog/Custom-CSS-Filters/demo/Battersea.jpg">
-        <a href="javascript:(function(){var s=document.getElementById(&quot;colourblind-styling&quot;);var x=document.getElementById(&quot;colourblind-filters&quot;);if(!s){s=document.createElement(&quot;style&quot;);document.body.appendChild(s)}if(!x){x=document.createElement(&quot;div&quot;);x.setAttribute(&quot;style&quot;,&quot;height: 0; padding: 0; margin: 0; line-height: 0;&quot;);x.innerHTML=&#39;&lt;svg id=&quot;colorblind-filters&quot; style=&quot;display: none&quot;&gt; &lt;defs&gt; &lt;filter id=&quot;protanopia&quot;&gt; &lt;feColorMatrix type=&quot;matrix&quot; values=&quot;0.567,0.433,0,0,0 0.558,0.442,0,0,0 0 0.242,0.758,0,0 0,0,0,1,0&quot; in=&quot;SourceGraphic&quot; /&gt; &lt;/filter&gt; &lt;filter id=&quot;protanomaly&quot;&gt; &lt;feColorMatrix type=&quot;matrix&quot; values=&quot;0.817,0.183,0,0,0 0.333,0.667,0,0,0 0,0.125,0.875,0,0 0,0,0,1,0&quot; in=&quot;SourceGraphic&quot; /&gt; &lt;/filter&gt; &lt;filter id=&quot;deuteranopia&quot;&gt; &lt;feColorMatrix type=&quot;matrix&quot; values=&quot;0.625,0.375,0,0,0 0.7,0.3,0,0,0 0,0.3,0.7,0,0 0,0,0,1,0&quot; in=&quot;SourceGraphic&quot; /&gt; &lt;/filter&gt; &lt;filter id=&quot;deuteranomaly&quot;&gt; &lt;feColorMatrix type=&quot;matrix&quot; values=&quot;0.8,0.2,0,0,0 0.258,0.742,0,0,0 0,0.142,0.858,0,0 0,0,0,1,0&quot; in=&quot;SourceGraphic&quot; /&gt; &lt;/filter&gt; &lt;filter id=&quot;tritanopia&quot;&gt; &lt;feColorMatrix type=&quot;matrix&quot; values=&quot;0.95,0.05,0,0,0 0,0.433,0.567,0,0 0,0.475,0.525,0,0 0,0,0,1,0&quot; in=&quot;SourceGraphic&quot; /&gt; &lt;/filter&gt; &lt;filter id=&quot;tritanomaly&quot;&gt; &lt;feColorMatrix type=&quot;matrix&quot; values=&quot;0.967,0.033,0,0,0 0,0.733,0.267,0,0 0,0.183,0.817,0,0 0,0,0,1,0&quot; in=&quot;SourceGraphic&quot; /&gt; &lt;/filter&gt; &lt;filter id=&quot;achromatopsia&quot;&gt; &lt;feColorMatrix type=&quot;matrix&quot; values=&quot;0.299,0.587,0.114,0,0 0.299,0.587,0.114,0,0 0.299,0.587,0.114,0,0 0,0,0,1,0&quot; in=&quot;SourceGraphic&quot; /&gt; &lt;/filter&gt; &lt;filter id=&quot;achromatomaly&quot;&gt; &lt;feColorMatrix type=&quot;matrix&quot; values=&quot;0.618,0.320,0.062,0,0 0.163,0.775,0.062,0,0 0.163,0.320,0.516,0,0 0,0,0,1,0&quot; in=&quot;SourceGraphic&quot; /&gt; &lt;/filter&gt; &lt;/defs&gt; &lt;/svg&gt;&#39;;document.body.appendChild(x)}var l=[&quot;protanopia&quot;,&quot;protanomaly&quot;,&quot;deuteranopia&quot;,&quot;deuteranomaly&quot;,&quot;tritanopia&quot;,&quot;tritanomaly&quot;,&quot;achromatopsia&quot;,&quot;achromatomaly&quot;];var p=&quot;&quot;;for(var i in l)p+=parseInt(i)+1+&quot;: &quot;+l[i]+&quot;; &quot;;var c=parseInt(prompt(&quot;0: off; &quot;+p))-1;if(isNaN(c))return;if(c&gt;=l.length)return;if(c==-1){s.innerHTML=&quot;body{-webkit-filter:none;-moz-filter:none;-ms-filter:none;-o-filter:none;filter:none;}&quot;;return}c=l[c];if(document.getElementById(c))s.innerHTML=&quot;body{-webkit-filter:!!;-moz-filter:!!;-ms-filter:!!;-o-filter:!!;filter:!!;}&quot;.replace(/!!/g,&quot;url(#&quot;+c+&quot;)&quot;);else s.innerHTML=&quot;body{-webkit-filter:none;-moz-filter:none;-ms-filter:none;-o-filter:none;filter:none;}&quot;})();">Colour Blind</a>
-        <p>Simply drag this link to you bookmarks bar or try by just clicking it.</p>
+    <body class="starting-class">
+
+    <div class="selection"> 
+        <div class="line">Drag-drop an image!</div>
+        <br>
+        <div class="cycle-background-size" onclick="cycleBackgroundSize();">Cycle img size</div>
+        <br>
+        <div class="type-select" onmouseover="hover(this, 'reset')">Reset</div>
+        <div class="type-select" onmouseover="hover(this, 'protanopia')">Protanopia</div>
+        <div class="type-select" onmouseover="hover(this, 'protanomaly')">Protanomaly</div>
+        <div class="type-select" onmouseover="hover(this, 'deuteranopia')">Deuteranopia</div>
+        <div class="type-select" onmouseover="hover(this, 'deuteranomaly')">Deuteranomaly</div>
+        <div class="type-select" onmouseover="hover(this, 'tritanopia')">Tritanopia</div>
+        <div class="type-select" onmouseover="hover(this, 'tritanomaly')">Tritanomaly</div>
+        <div class="type-select" onmouseover="hover(this, 'achromatopsia')">Achromatopsia</div>
+        <div class="type-select" onmouseover="hover(this, 'achromatomaly')">Achromatomaly</div>
+    </div>
+
+
     </body>
 </html>
